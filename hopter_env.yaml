@@ -1,0 +1,21 @@
+# Configuration for MLAD env ⚙️
+# Reference: https://github.com/replicate/cog/blob/main/docs/yaml.md
+
+# name for this project
+project_name: brush-edit
+
+build:
+  # set to true if your model requires a GPU
+  gpu: true
+
+  # python version in the form '3.11' or '3.11.4'
+  python_version: "3.11"
+  python_requirements: "app/requirements.txt"
+
+
+  run:
+    - pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+    # - pip install -e .
+
+# predict.py defines how predictions are run on your model
+predict: "hopter_predict.py:Predictor"

@@ -159,6 +159,7 @@ def vlm_response_mask(vlm_processor,
                 base64_image = encode_image(image)
                 messages = create_add_object_messages_qwen2(editing_prompt, base64_image, height=height, width=width)
                 response_str = run_qwen2_vl_inference(vlm_processor, vlm_model, messages, image, device)
+            print(response_str)
             pattern = r'\[\d{1,3}(?:,\s*\d{1,3}){3}\]'
             box = re.findall(pattern, response_str)
             box = box[0][1:-1].split(",")

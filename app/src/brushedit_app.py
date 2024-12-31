@@ -290,7 +290,7 @@ OUTPUT_IMAGE_PATH = {
 # os.makedirs('gradio_temp_dir', exist_ok=True)
 
 VLM_MODEL_NAMES = list(vlms_template.keys())
-DEFAULT_VLM_MODEL_NAME = "Qwen2-VL-7B-Instruct (Default)"
+DEFAULT_VLM_MODEL_NAME = "GPT4-o (Highly Recommended)"
 BASE_MODELS = list(base_models_template.keys())
 DEFAULT_BASE_MODEL = "realisticVision (Default)"
 
@@ -332,14 +332,16 @@ if not os.path.exists(BrushEdit_path):
     )
 
 ## init default VLM
+# print("[LOG] loading default VLM")
 vlm_type, vlm_local_path, vlm_processor, vlm_model = vlms_template[DEFAULT_VLM_MODEL_NAME]
-if vlm_processor != "" and vlm_model != "":
-    vlm_model.to(device)
-else:
-    raise gr.Error("Please Download default VLM model "+ DEFAULT_VLM_MODEL_NAME +" first.")
+# if vlm_processor != "" and vlm_model != "":
+#     vlm_model.to(device)
+# else:
+#     raise gr.Error("Please Download default VLM model "+ DEFAULT_VLM_MODEL_NAME +" first.")
 
 
 ## init base model
+print("[LOG] loading base model")
 base_model_path = os.path.join(BrushEdit_path, "base_model/realisticVisionV60B1_v51VAE")
 brushnet_path = os.path.join(BrushEdit_path, "brushnetX")
 sam_path = os.path.join(BrushEdit_path, "sam/sam_vit_h_4b8939.pth")
@@ -347,6 +349,7 @@ groundingdino_path = os.path.join(BrushEdit_path, "grounding_dino/groundingdino_
 
 
 # input brushnetX ckpt path
+print("[LOG] loading brushnetx")
 brushnet = BrushNetModel.from_pretrained(brushnet_path, torch_dtype=torch_dtype)
 pipe = StableDiffusionBrushNetPipeline.from_pretrained(
         base_model_path, brushnet=brushnet, torch_dtype=torch_dtype, low_cpu_mem_usage=False
@@ -359,12 +362,14 @@ pipe.enable_model_cpu_offload()
 
 
 ## init SAM
+print("[LOG] loading SAM")
 sam = build_sam(checkpoint=sam_path)
 sam.to(device=device)
 sam_predictor = SamPredictor(sam)
 sam_automask_generator = SamAutomaticMaskGenerator(sam)
 
 ## init groundingdino_model
+print("[LOG] loading GroundingDino")
 config_file = 'app/utils/GroundingDINO_SwinT_OGC.py'
 groundingdino_model = load_grounding_dino_model(config_file, groundingdino_path, device=device)
 
@@ -1699,4 +1704,4 @@ with block as demo:
     
 ## if have a localhost access error, try to use the following code
 # demo.launch(server_name="0.0.0.0", server_port=12345)
-demo.launch()
+demo.launch(share=True)
